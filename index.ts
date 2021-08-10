@@ -7,10 +7,14 @@ const start = async () => {
   const mongoUri = mongo.getUri();
 
   try {
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(
+      `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-shard-00-00.sbbpk.mongodb.net:27017,cluster0-shard-00-01.sbbpk.mongodb.net:27017,cluster0-shard-00-02.sbbpk.mongodb.net:27017/${process.env.DB_NAME}?ssl=true&replicaSet=atlas-bucdfc-shard-0&authSource=admin&retryWrites=true&w=majority`,
+      { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    // await mongoose.connect(mongoUri, {
+    //   useNewUrlParser: true,
+    //   useUnifiedTopology: true,
+    // });
     console.log('Connected to mongodb');
   } catch (err) {
     console.log(err);

@@ -7,7 +7,8 @@ import cookieSession from 'cookie-session';
 import { json } from 'body-parser';
 import { NotFoundError } from './src/errors';
 import { errorHandler, currentUser } from './src/middlewares';
-import { authRoutes } from './src/routes/auth-routes';
+import { authRoutes } from './src/routes/auth/auth-routes';
+import { accountRoutes } from './src/routes/account-routes/account-routes';
 
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 
@@ -17,13 +18,13 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== 'test',
   })
 );
 
 app.use(currentUser);
 
 app.use('/api/users', authRoutes);
+app.use('/api/account', accountRoutes);
 
 app.all('*', async (req, res) => {
   throw new NotFoundError();

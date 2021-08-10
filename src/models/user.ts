@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { Password } from '../services/password';
 
 // An interface that describes the properties
@@ -7,6 +7,7 @@ import { Password } from '../services/password';
 interface UserAttrs {
   email: string;
   password: string;
+  accountId?: string;
 }
 
 // An interface that describes the properties
@@ -19,6 +20,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
 interface UserDoc extends mongoose.Document {
   email: string;
   password: string;
+  accountId?: string;
 }
 
 const userSchema = new mongoose.Schema(
@@ -30,6 +32,10 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    accountId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Account',
     },
   },
   {
