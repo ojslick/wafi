@@ -4,6 +4,7 @@ import {
   deposit,
   getBalance,
   inAppTransfer,
+  locationInfo,
 } from '../../controllers/account-controllers';
 import { currentuser } from '../../controllers/auth-controllers';
 import { requireAuth, validateRequest } from '../../middlewares';
@@ -31,6 +32,18 @@ router.post(
   ],
   validateRequest,
   inAppTransfer
+);
+
+router.post(
+  '/locationInfo',
+  requireAuth,
+  [
+    body('countryCode')
+      .notEmpty()
+      .withMessage('country code must not be empty'),
+  ],
+  validateRequest,
+  locationInfo
 );
 
 export { router as accountRoutes };

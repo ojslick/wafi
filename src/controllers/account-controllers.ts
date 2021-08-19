@@ -37,10 +37,9 @@ const deposit = async (req: Request, res: Response) => {
 };
 
 const inAppTransfer = async (req: Request, res: Response) => {
-  //withdraw money from balance
-  //deposit money into another account with the person's account id
   const { amount, beneficiaryId } = req.body;
 
+  //withdraw money from balance
   const user = await User.findById(req.currentUser?.id);
 
   const account = await Account.findById(user!.accountId);
@@ -53,6 +52,7 @@ const inAppTransfer = async (req: Request, res: Response) => {
     });
   }
 
+  //deposit money into another account with the person's account id
   const beneficiaryAccount = await Account.findById(beneficiaryId);
 
   beneficiaryAccount?.set({
@@ -65,6 +65,7 @@ const inAppTransfer = async (req: Request, res: Response) => {
     account!.set({
       balance: account!.balance,
     });
+    await account?.save();
     throw new Error('Something went wrong, your money has been reversed');
   }
   await account?.save();
@@ -72,4 +73,38 @@ const inAppTransfer = async (req: Request, res: Response) => {
   res.send(account);
 };
 
-export { getBalance, deposit, inAppTransfer };
+const locationInfo = async (req: Request, res: Response) => {
+  const { countryCode } = req.body;
+
+  const getRate = () => {
+    if (countryCode === 'NG') {
+      return 411.57;
+    } else if (countryCode === 'US') {
+      return 1;
+    } else if (countryCode === 'CN') {
+      return 109.47;
+    } else if (countryCode === 'JP') {
+      return 6.46;
+    } else {
+      return null;
+    }
+  };
+
+  if (!getRate()) {
+    throw new BadRequestError('Country code is invalid');
+  }
+
+  const user = await User.findById(req.currentUser?.id);
+
+  const account = await Account.findById(user!.accountId);
+
+  //@ts-ignore
+  account?.set({ balance: account.balance * getRate() });
+
+  await account?.save();
+
+  res.send(account);
+};
+// darius.simmons05@gmail.com
+
+export { getBalance, deposit, inAppTransfer, locationInfo };
